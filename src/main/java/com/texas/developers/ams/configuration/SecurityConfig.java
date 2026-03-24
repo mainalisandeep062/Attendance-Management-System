@@ -1,6 +1,6 @@
-package com.texas.developers.texasattendancemanagementsystem.configuration;
+package com.texas.developers.ams.configuration;
 
-import com.texas.developers.texasattendancemanagementsystem.configuration.service.CustomUserDetailsService;
+import com.texas.developers.ams.configuration.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

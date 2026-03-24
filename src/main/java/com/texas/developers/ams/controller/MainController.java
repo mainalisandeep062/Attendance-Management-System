@@ -1,4 +1,4 @@
-package com.texas.developers.texasattendancemanagementsystem.controller;
+package com.texas.developers.ams.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

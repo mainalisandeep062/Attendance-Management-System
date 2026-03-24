@@ -1,8 +1,8 @@
-package com.texas.developers.texasattendancemanagementsystem.configuration.loader;
+package com.texas.developers.ams.configuration.loader;
 
-import com.texas.developers.texasattendancemanagementsystem.entity.User;
-import com.texas.developers.texasattendancemanagementsystem.enums.RoleEnum;
-import com.texas.developers.texasattendancemanagementsystem.repo.UserRepository;
+import com.texas.developers.ams.entity.User;
+import com.texas.developers.ams.enums.RoleEnum;
+import com.texas.developers.ams.repo.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.*;
@@ -20,6 +20,8 @@ public class DataInitializer {
                 User user = new User();
                 user.setUsername(username);
                 user.setPassword(encoder.encode("admin123"));
+                user.setEmail("lightsuraj129@gmail.com");
+                user.setMobileNumber("9843686051");
                 user.setRole(RoleEnum.ADMIN);
                 repo.save(user);
                 log.info("superadmin created successfully !!");

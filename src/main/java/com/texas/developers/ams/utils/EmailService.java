@@ -1,0 +1,49 @@
+package com.texas.developers.ams.utils;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+
+import java.util.Map;
+
+@Service
+public class EmailService {
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Autowired
+    private TemplateEngine templateEngine;
+
+    /**
+     * Sends email using Thymeleaf template
+     *
+     * @param to            recipient email
+     * @param subject       email subject
+     * @param templateName  Thymeleaf template filename (without .html)
+     * @param templateModel key-value map for template variables
+     */
+    public void sendEmail(String to, String subject, String templateName, Map<String, Object> templateModel) throws MessagingException {
+        // Prepare Thymeleaf context
+        Context context = new Context();
+        context.setVariables(templateModel);
+
+        // Process template
+        String htmlContent = templateEngine.process(templateName, context);
+
+        // Prepare MimeMessage
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(htmlContent, true); // true = HTML
+
+        mailSender.send(message);
+    }
+}

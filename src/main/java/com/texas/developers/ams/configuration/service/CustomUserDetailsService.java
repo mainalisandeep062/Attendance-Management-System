@@ -1,8 +1,8 @@
-package com.texas.developers.texasattendancemanagementsystem.configuration.service;
+package com.texas.developers.ams.configuration.service;
 
 
-import com.texas.developers.texasattendancemanagementsystem.entity.User;
-import com.texas.developers.texasattendancemanagementsystem.repo.UserRepository;
+import com.texas.developers.ams.entity.User;
+import com.texas.developers.ams.repo.UserRepository;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 

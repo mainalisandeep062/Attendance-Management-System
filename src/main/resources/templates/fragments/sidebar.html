@@ -1,10 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!-- templates/fragments/sidebar.html -->
+<div th:fragment="sidebar" class="bg-dark text-white p-3 vh-100" style="width: 250px;">
 
-</body>
-</html>
+    <h4 class="text-center mb-4">Admin Panel</h4>
+
+    <ul class="nav flex-column">
+
+        <!-- Dashboard -->
+        <li class="nav-item mb-2">
+            <a th:href="@{/dashboard}" class="nav-link text-white">🏠 Dashboard</a>
+        </li>
+
+        <!-- Master Setting -->
+        <li class="nav-item mb-2">
+
+            <!-- Toggle -->
+            <a class="nav-link text-white d-flex justify-content-between align-items-center"
+               data-bs-toggle="collapse"
+               href="#masterMenu">
+                ⚙️ Master Setting
+                <span>▼</span>
+            </a>
+
+            <!-- Submenu -->
+            <div class="collapse" id="masterMenu">
+                <ul class="nav flex-column ms-3">
+
+                    <li class="nav-item">
+                        <a th:href="@{/course}" class="nav-link text-white">👤 Course</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a th:href="@{/teacher}" class="nav-link text-white">🔑 Teacher</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a th:href="@{/master-setting/permissions}" class="nav-link text-white">🛡️ Permissions</a>
+                    </li>
+
+                </ul>
+            </div>
+        </li>
+
+        <!-- Settings -->
+        <li class="nav-item mb-2">
+            <a th:href="@{/settings}" class="nav-link text-white">⚙️ Settings</a>
+        </li>
+
+        <!-- Logout -->
+        <li class="nav-item mt-4">
+            <form th:action="@{/logout}" method="post">
+                <button class="btn btn-danger w-100">Logout</button>
+            </form>
+        </li>
+
+    </ul>
+
+</div>

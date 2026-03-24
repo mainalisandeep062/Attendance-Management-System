@@ -1,6 +1,6 @@
-package com.texas.developers.texasattendancemanagementsystem.repo;
+package com.texas.developers.ams.repo;
 
-import com.texas.developers.texasattendancemanagementsystem.entity.User;
+import com.texas.developers.ams.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

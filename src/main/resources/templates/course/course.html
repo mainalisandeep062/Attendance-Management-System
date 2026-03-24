@@ -1,10 +1,150 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Master Setting</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 <body>
+
+<div class="d-flex">
+
+    <!-- Sidebar -->
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+    <div class="flex-grow-1 p-4 mt-3">
+    <!-- Main Content -->
+    <div class="flex-grow-1 p-4">
+
+        <div class="row">
+
+            <!-- LEFT: FORM (4 cols) -->
+            <div class="col-md-4">
+                <div class="card p-3 shadow-sm">
+                    <h5>Add User</h5>
+
+                    <form>
+                        <div class="mb-2">
+                            <label>Name</label>
+                            <input type="text" class="form-control">
+                        </div>
+
+                        <div class="mb-2">
+                            <label>Email</label>
+                            <input type="email" class="form-control">
+                        </div>
+
+                        <div class="mb-2">
+                            <label>Role</label>
+                            <select class="form-control">
+                                <option>User</option>
+                                <option>Admin</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-primary w-100 mt-2">Save</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- RIGHT: TABLE (8 cols) -->
+            <div class="col-md-8">
+                <div class="card p-3 shadow-sm">
+
+                    <h5>User List</h5>
+
+                    <table class="table table-bordered mt-3" id="dataTable">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        <!-- JS will fill -->
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination -->
+                    <nav>
+                        <ul class="pagination" id="pagination"></ul>
+                    </nav>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Frontend Pagination Script -->
+<script id="pgscript01">
+    const data = [];
+
+    // Dummy data
+    for (let i = 1; i <= 50; i++) {
+        data.push({
+            id: i,
+            name: "User " + i,
+            email: "user" + i + "@mail.com"
+        });
+    }
+
+    const rowsPerPage = 5;
+    let currentPage = 1;
+
+    function displayTable(page) {
+        const tableBody = document.getElementById("tableBody");
+        tableBody.innerHTML = "";
+
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const paginatedItems = data.slice(start, end);
+
+        paginatedItems.forEach(item => {
+            const row = `
+                <tr>
+                    <td>${item.id}</td>
+                    <td>${item.name}</td>
+                    <td>${item.email}</td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+    }
+
+    function setupPagination() {
+        const pageCount = Math.ceil(data.length / rowsPerPage);
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+
+        for (let i = 1; i <= pageCount; i++) {
+            const li = document.createElement("li");
+            li.className = "page-item";
+
+            const btn = document.createElement("button");
+            btn.className = "page-link";
+            btn.innerText = i;
+
+            btn.addEventListener("click", () => {
+                currentPage = i;
+                displayTable(currentPage);
+            });
+
+            li.appendChild(btn);
+            pagination.appendChild(li);
+        }
+    }
+
+    displayTable(currentPage);
+    setupPagination();
+</script>
 
 </body>
 </html>

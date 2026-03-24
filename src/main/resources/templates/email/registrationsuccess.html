@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration Successful</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            padding: 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .header {
+            color: #7b2ff7;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .content p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .details {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .footer {
+            font-size: 12px;
+            color: #888;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="header">Welcome to Texas International College!</div>
+
+    <div class="content">
+        <p>Dear <span th:text="${name}">User</span>,</p>
+
+        <p>Your account has been successfully created. Here are your login credentials:</p>
+
+        <div class="details">
+            <p><strong>Username:</strong> <span th:text="${username}">username</span></p>
+            <p><strong>Password:</strong> <span th:text="${password}">password</span></p>
+        </div>
+
+        <p>Please login and change your password immediately for security purposes.</p>
+
+        <p>Thank you,<br/>Texas International College Team</p>
+    </div>
+
+    <div class="footer">
+        &copy; 2026 Texas International College. All rights reserved.
+    </div>
+</div>
+</body>
+</html>

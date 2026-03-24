@@ -1,7 +1,7 @@
-package com.texas.developers.texasattendancemanagementsystem.entity;
+package com.texas.developers.ams.entity;
 
 
-import com.texas.developers.texasattendancemanagementsystem.enums.RoleEnum;
+import com.texas.developers.ams.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +26,12 @@ public class User {
 
     @Column(name = "password", length = 200, nullable = false)
     private String password;
+
+    @Column(name = "mobile_number", length = 10, nullable = false)
+    private String mobileNumber;
+
+    @Column(name = "email", length = 100, nullable = false)
+    private String email;
 
     @Column(name = "role", length = 50, nullable = false)
     @Enumerated(EnumType.STRING)

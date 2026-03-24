@@ -1,4 +1,4 @@
-package com.texas.developers.texasattendancemanagementsystem;
+package com.texas.developers.ams;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
