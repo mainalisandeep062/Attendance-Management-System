@@ -25,6 +25,7 @@ public class CourseController {
 
     @GetMapping("/add")
     public String showAddForm(Model model) {
+        // TODO create DTO and converter
         model.addAttribute("course", new Course());
         return "course/course-form";
     }

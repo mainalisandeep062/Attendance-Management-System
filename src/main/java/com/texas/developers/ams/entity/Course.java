@@ -15,23 +15,23 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-
 @Table(name = "courses")
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "course_name" , length = 50 , nullable = false)
+    @Column(name = "course_name", length = 50, nullable = false)
     private String courseName;
 
-    @Column(name = "course_description" , length = 1000 , nullable = false)
+    @Column(name = "course_description", length = 1000, nullable = false)
     private String courseDescription;
 
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    //TODO remove this
     @Column(name = "credit_hours", nullable = false)
     private Integer creditHours;
 
