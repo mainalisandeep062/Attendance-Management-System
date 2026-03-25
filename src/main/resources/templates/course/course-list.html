@@ -34,7 +34,6 @@
                         <th>ID</th>
                         <th>Course Name</th>
                         <th>Course Description</th>
-                        <th>Credit Hours</th>
                         <th>Created At</th>
                         <th style="width:150px;">Actions</th>
                     </tr>
@@ -44,7 +43,6 @@
                         <td th:text="${course.id}"></td>
                         <td th:text="${course.courseName}"></td>
                         <td th:text="${course.courseDescription}"></td>
-                        <td th:text="${course.creditHours}"></td>
                         <td th:text="${course.createdAt}"></td>
                         <td>
                             <a th:href="@{/course/edit/{id}(id=${course.id})}"

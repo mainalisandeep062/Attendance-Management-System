@@ -43,13 +43,13 @@ public class CourseController {
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
+    public String showEditForm(@PathVariable Integer id, Model model) {
         model.addAttribute("course", courseService.getCourseById(id));
         return "course/course-form";
     }
 
     @PostMapping("/edit/{id}")
-    public String updateCourse(@PathVariable Long id,
+    public String updateCourse(@PathVariable Integer id,
                                @ModelAttribute("course") @Valid Course course,
                                BindingResult result,
                                RedirectAttributes redirectAttributes) {
@@ -63,7 +63,7 @@ public class CourseController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteCourse(@PathVariable Long id,
+    public String deleteCourse(@PathVariable Integer id,
                                RedirectAttributes redirectAttributes) {
         courseService.deleteCourse(id);
         redirectAttributes.addFlashAttribute("success", "Course deleted successfully!");

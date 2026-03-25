@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "course_name", length = 50, nullable = false)
     private String courseName;
@@ -31,8 +32,7 @@ public class Course {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    //TODO remove this
-    @Column(name = "credit_hours", nullable = false)
-    private Integer creditHours;
+    @ManyToMany(mappedBy = "courses")
+    private List<Teacher> teachers;
 
 }
