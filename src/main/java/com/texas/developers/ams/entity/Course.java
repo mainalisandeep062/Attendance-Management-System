@@ -2,6 +2,7 @@ package com.texas.developers.ams.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,9 +22,11 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "COURSE_NAME_REQUIRED")
     @Column(name = "course_name", length = 50, nullable = false)
     private String courseName;
 
+    @NotBlank(message = "COURSE_DESCRIPTION_REQUIRED")
     @Column(name = "course_description", length = 1000, nullable = false)
     private String courseDescription;
 
@@ -31,8 +34,5 @@ public class Course {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    //TODO remove this
-    @Column(name = "credit_hours", nullable = false)
-    private Integer creditHours;
 
 }

@@ -1,6 +1,7 @@
 package com.texas.developers.ams.controller;
 
 import com.texas.developers.ams.configuration.service.CourseServices;
+import com.texas.developers.ams.dto.CourseCreationDto;
 import com.texas.developers.ams.entity.Course;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class CourseController {
     @GetMapping("/add")
     public String showAddForm(Model model) {
         // TODO create DTO and converter
-        model.addAttribute("course", new Course());
+        model.addAttribute("course", new CourseCreationDto());
         return "course/course-form";
     }
 
