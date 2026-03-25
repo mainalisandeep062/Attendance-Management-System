@@ -1,9 +1,9 @@
 spring:
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: lightsuraj129@gmail.com
-    password: pckc ttxg tyje vwqp
+    host: ${SMTP_HOST:smtp.gmail.com}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
     default-encoding: UTF-8
     properties:
       mail:
@@ -12,12 +12,12 @@ spring:
           starttls:
             enable: true
           ssl:
-            trust: smtp.gmail.com
+            trust: ${SMTP_HOST:smtp.gmail.com}
   datasource:
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: postgres
-    url: jdbc:postgresql://localhost:5432/ams
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:admin}
+    url: ${DB_URI:jdbc:postgresql://localhost:5432/ams}
   jpa:
     hibernate:
       ddl-auto: update
@@ -25,4 +25,4 @@ spring:
   application:
     name: ams
 server:
-  port: 8888
+  port: ${PORT:8888}

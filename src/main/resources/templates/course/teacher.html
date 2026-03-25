@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Teacher Management</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="d-flex">
+
+  <!-- Sidebar -->
+  <div th:replace="fragments/sidebar :: sidebar"></div>
+
+  <!-- Main Content -->
+  <div class="flex-grow-1 p-4 mt-3">
+    <div class="row">
+
+      <!-- LEFT: FORM (4 cols) -->
+      <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+          <h5>Add Teacher</h5>
+
+          <form>
+            <div class="mb-2">
+              <label>Name</label>
+              <input type="text" class="form-control">
+            </div>
+
+            <div class="mb-2">
+              <label>Email</label>
+              <input type="email" class="form-control">
+            </div>
+
+            <div class="mb-2">
+              <label>Subject</label>
+              <input type="text" class="form-control">
+            </div>
+
+            <button class="btn btn-primary w-100 mt-2">Save</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- RIGHT: TABLE (8 cols) -->
+      <div class="col-md-8">
+        <div class="card p-3 shadow-sm">
+
+          <h5>Teacher List</h5>
+
+          <table class="table table-bordered mt-3" id="teacherTable">
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Subject</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="teacherTableBody">
+            <!-- JS will fill -->
+            </tbody>
+          </table>
+
+          <!-- Pagination -->
+          <nav>
+            <ul class="pagination" id="teacherPagination"></ul>
+          </nav>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Frontend Pagination Script -->
+<script id="teacherPaginationScript">
+  const teacherData = [];
+
+  // Dummy data for teachers
+  for (let i = 1; i <= 50; i++) {
+    teacherData.push({
+      id: i,
+      name: "Teacher " + i,
+      email: "teacher" + i + "@school.com",
+      subject: "Subject " + (i % 5 + 1)
+    });
+  }
+
+  const rowsPerPage = 5;
+  let currentPage = 1;
+
+  function displayTeacherTable(page) {
+    const tableBody = document.getElementById("teacherTableBody");
+    tableBody.innerHTML = "";
+
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const paginatedItems = teacherData.slice(start, end);
+
+    paginatedItems.forEach(item => {
+      const row = `
+                <tr>
+                    <td>${item.id}</td>
+                    <td>${item.name}</td>
+                    <td>${item.email}</td>
+                    <td>${item.subject}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm">Edit</button>
+                        <button class="btn btn-danger btn-sm ms-2">Delete</button>
+                    </td>
+                </tr>
+            `;
+      tableBody.innerHTML += row;
+    });
+  }
+
+  function setupTeacherPagination() {
+    const pageCount = Math.ceil(teacherData.length / rowsPerPage);
+    const pagination = document.getElementById("teacherPagination");
+    pagination.innerHTML = "";
+
+    for (let i = 1; i <= pageCount; i++) {
+      const li = document.createElement("li");
+      li.className = "page-item";
+
+      const btn = document.createElement("button");
+      btn.className = "page-link";
+      btn.innerText = i;
+
+      btn.addEventListener("click", () => {
+        currentPage = i;
+        displayTeacherTable(currentPage);
+      });
+
+      li.appendChild(btn);
+      pagination.appendChild(li);
+    }
+  }
+
+  displayTeacherTable(currentPage);
+  setupTeacherPagination();
+</script>
+
+</body>
+</html>
