@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add User</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Full height center */
+        .full-height {
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+
+    <!-- Sidebar -->
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <!-- Content -->
+    <div class="flex-grow-1 d-flex justify-content-center align-items-center full-height">
+
+        <div class="col-md-4">
+
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4">
+
+                    <h3 class="text-center mb-4">Add User</h3>
+
+                    <form th:action="@{/users/add}" th:object="${userDto}" method="post">
+
+                        <!-- Username -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Username</label>
+                            <input type="text" th:field="*{username}"
+                                   class="form-control form-control-lg"
+                                   placeholder="Enter username" required>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Password</label>
+                            <input type="password" th:field="*{password}"
+                                   class="form-control form-control-lg"
+                                   placeholder="Enter password" required>
+                        </div>
+
+                        <!-- Mobile -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Mobile Number</label>
+                            <input type="text" th:field="*{mobileNumber}"
+                                   class="form-control form-control-lg"
+                                   placeholder="98XXXXXXXX" required>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Email</label>
+                            <input type="email" th:field="*{email}"
+                                   class="form-control form-control-lg"
+                                   placeholder="example@email.com" required>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Role</label>
+                            <select th:field="*{role}"
+                                    class="form-select form-select-lg" required>
+                                <option value="">Select Role</option>
+                                <option th:each="r : ${roles}"
+                                        th:value="${r}"
+                                        th:text="${r}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <button class="btn btn-primary w-100 btn-lg">Save User</button>
+                        <a href="/users" class="btn btn-outline-secondary w-100 mt-2">Cancel</a>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
