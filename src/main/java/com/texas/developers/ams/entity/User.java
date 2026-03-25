@@ -36,4 +36,6 @@ public class User {
     @Column(name = "role", length = 50, nullable = false)
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
+
+    private Boolean isActive = Boolean.TRUE;
 }
