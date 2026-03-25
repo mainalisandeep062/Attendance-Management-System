@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "COURSE_NAME_REQUIRED")
     @Column(name = "course_name", length = 50, nullable = false)

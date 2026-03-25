@@ -6,12 +6,12 @@ public class CourseAlreasyExistException extends ApplicationException {
     private final Object data;
 
     public CourseAlreasyExistException() {
-        super("NOT_FOUND");
+        super("COURSE_ALREADY_EXISTS");
         this.data = null;
     }
 
     public CourseAlreasyExistException(Object account) {
-        super("NOT_FOUND");
+        super("COURSE_ALREADY_EXISTS");
         this.data = account;
     }
 
