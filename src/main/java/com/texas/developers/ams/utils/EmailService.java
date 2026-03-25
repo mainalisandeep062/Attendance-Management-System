@@ -1,6 +1,7 @@
 package com.texas.developers.ams.utils;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,9 @@ public class EmailService {
     private final JavaMailSender mailSender;
 
     private final TemplateEngine templateEngine;
+
+    @Value("${spring.mail.username}")
+    private String fromEmail;
 
     /**
      * Sends email using Thymeleaf template
@@ -39,6 +43,7 @@ public class EmailService {
         // Prepare MimeMessage
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+        helper.setFrom("Texas 'intl college <%s>".formatted(fromEmail));
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlContent, true); // true = HTML

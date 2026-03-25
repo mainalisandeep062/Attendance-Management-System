@@ -26,7 +26,7 @@ public class TeacherServices {
             emailService.sendEmail(
                     teacher.getEmail(),
                     "Welcome to the School",
-                    "email/registration_success",
+                    "email/registrationsuccess",
                     Map.of("name", teacher.getFullName(),
                             "username", teacher.getEmail(),
                             "password", "defaultPassword123"));
