@@ -2,43 +2,73 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Courses</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
-<h2>Courses</h2>
+<div class="d-flex">
 
-<a href="/course/add">Add New Course</a>
+    <!-- Sidebar -->
+    <div th:replace="fragments/sidebar :: sidebar"></div>
 
-<br/><br/>
+    <!-- Main Content -->
+    <div class="flex-grow-1 p-4">
 
-<div th:if="${success}" th:text="${success}"></div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Courses</h2>
+            <a href="/course/add" class="btn btn-success">+ Add Course</a>
+        </div>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Course Name</th>
-        <th>Course Description</th>
-        <th>Credit Hours</th>
-        <th>Created At</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="course : ${courses}">
-        <td th:text="${course.id}"></td>
-        <td th:text="${course.courseName}"></td>
-        <td th:text="${course.courseDescription}"></td>
-        <td th:text="${course.creditHours}"></td>
-        <td th:text="${course.createdAt}"></td>
-        <td>
-            <a th:href="@{/course/edit/{id}(id=${course.id})}">Edit</a>
-            &nbsp;
-            <a th:href="@{/course/delete/{id}(id=${course.id})}">Delete</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+        <!-- Success Message -->
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <!-- Table -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <table class="table table-bordered table-striped">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Course Name</th>
+                        <th>Course Description</th>
+                        <th>Credit Hours</th>
+                        <th>Created At</th>
+                        <th style="width:150px;">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="course : ${courses}">
+                        <td th:text="${course.id}"></td>
+                        <td th:text="${course.courseName}"></td>
+                        <td th:text="${course.courseDescription}"></td>
+                        <td th:text="${course.creditHours}"></td>
+                        <td th:text="${course.createdAt}"></td>
+                        <td>
+                            <a th:href="@{/course/edit/{id}(id=${course.id})}"
+                               class="btn btn-sm btn-primary">Edit</a>
+
+                            <a th:href="@{/course/delete/{id}(id=${course.id})}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Are you sure you want to delete this course?');">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

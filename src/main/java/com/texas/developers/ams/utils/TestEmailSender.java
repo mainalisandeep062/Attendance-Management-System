@@ -22,12 +22,12 @@ public class TestEmailSender {
         model.put("username", "yenya123");
         model.put("password", "secret123");
 
-        emailService.sendEmail(
-                "suraj.maharjan@yenyasoft.com",
-                "Registration Successful",
-                "email/registrationsuccess",
-                model
-        );
+//        emailService.sendEmail(
+//                "suraj.maharjan@yenyasoft.com",
+//                "Registration Successful",
+//                "email/registrationsuccess",
+//                model
+//        );
 
         System.out.println("Email Sent!");
     }
