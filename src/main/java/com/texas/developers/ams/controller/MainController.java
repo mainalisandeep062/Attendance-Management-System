@@ -14,16 +14,5 @@ public class MainController {
         return "login";
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard(Model model) {
-        model.addAttribute("totalStudents", 120);
-        model.addAttribute("totalTeachers", 25);
-        model.addAttribute("totalUsers", 40);
-        model.addAttribute("totalCourses", 15);
-        model.addAttribute("activeCourses", 10);
-        model.addAttribute("completedCourses", 5);
-        model.addAttribute("todayAttendance", "90%");
-        model.addAttribute("absentStudents", 12);
-        return "dashboard";
-    }
+
 }

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Attendance Matrix</title>
+    <meta charset="UTF-8">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { background: #f4f6f9; }
+
+        .header-title {
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .day-card {
+            background: #fff;
+            border-radius: 10px;
+            text-align: center;
+            width: 90px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .day-card .top {
+            background: #6f42c1;
+            color: white;
+            padding: 4px;
+            font-size: 12px;
+        }
+
+        .day-card .day {
+            font-size: 28px;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        .table thead {
+            background: linear-gradient(to right, #5a55d1, #7b5cff);
+            color: white;
+        }
+
+        .badge-present {
+            background: #00c853;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .badge-absent {
+            background: #ff1744;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .today-col {
+            background-color: #e8f5e9 !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid p-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between mb-4">
+        <div>
+            <div class="header-title">
+                Daily Attendance : Java Batch A
+            </div>
+            <div>Weightage (In Hours): 2</div>
+        </div>
+
+        <div class="day-card">
+            <div class="top">DAY</div>
+            <div class="day">26</div>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <form method="post">
+
+        <div class="table-responsive">
+            <table class="table table-bordered text-center align-middle">
+
+                <thead>
+                <tr>
+                    <th class="text-start">Name</th>
+
+                    <!-- 8 DAYS -->
+                    <th>Mar/20</th>
+                    <th>Mar/21</th>
+                    <th>Mar/22</th>
+                    <th>Mar/23</th>
+                    <th>Mar/24</th>
+                    <th>Mar/25</th>
+                    <th class="today-col">Mar/26</th>
+                    <th>Mar/27</th>
+
+                    <th>Absent</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <!-- STUDENTS -->
+                <tr>
+                    <td class="text-start">Ram Bahadur</td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td class="today-col"><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td>2</td>
+                </tr>
+
+                <tr>
+                    <td class="text-start">Sita Gurung</td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td class="today-col"><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td>2</td>
+                </tr>
+
+                <tr>
+                    <td class="text-start">Hari Karki</td>
+                    <td><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td class="today-col"><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td>3</td>
+                </tr>
+
+                <tr>
+                    <td class="text-start">Gita Rai</td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td class="today-col"><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td>0</td>
+                </tr>
+
+                <tr>
+                    <td class="text-start">Rabin Shrestha</td>
+                    <td><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td class="today-col"><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td>6</td>
+                </tr>
+
+                <tr>
+                    <td class="text-start">Sunil Thapa</td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-absent" onclick="toggle(this)">A</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td class="today-col"><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td><span class="badge-present" onclick="toggle(this)">P</span></td>
+                    <td>1</td>
+                </tr>
+
+                <!-- Add more students same way -->
+
+                </tbody>
+
+            </table>
+        </div>
+
+        <div class="text-end mt-3">
+            <button class="btn btn-primary">Submit</button>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+    function toggle(el) {
+        if (el.innerText === 'P') {
+            el.innerText = 'A';
+            el.classList.remove('badge-present');
+            el.classList.add('badge-absent');
+        } else {
+            el.innerText = 'P';
+            el.classList.remove('badge-absent');
+            el.classList.add('badge-present');
+        }
+    }
+</script>
+
+</body>
+</html>
