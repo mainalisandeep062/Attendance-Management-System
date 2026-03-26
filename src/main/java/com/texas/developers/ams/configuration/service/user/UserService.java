@@ -11,4 +11,6 @@ public interface UserService {
     void saveUser(UserDto dto);
 
     void deleteUser(Long id);
+
+    void toggleUserStatus(Long id);
 }

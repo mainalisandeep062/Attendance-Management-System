@@ -17,7 +17,7 @@ public class GlobalExceptionHandler  {
     }
 
     @ExceptionHandler(CourseAlreasyExistException.class)
-    public String handleNotFoundException(CourseAlreasyExistException ex,
+    public String handleCourseAlreadyExistException(CourseAlreasyExistException ex,
                                           Locale locale,
                                           RedirectAttributes redirectAttributes) {
         addErrorFlash(ex, locale, redirectAttributes);
@@ -25,6 +25,16 @@ public class GlobalExceptionHandler  {
             redirectAttributes.addFlashAttribute("findRequest", ex.getData());
         }
         return "redirect:/course";
+    }
+    @ExceptionHandler(UserAlreadyExistException.class)
+    public String handleUserAlreadyExistException(UserAlreadyExistException ex,
+                                          Locale locale,
+                                          RedirectAttributes redirectAttributes) {
+        addErrorFlash(ex, locale, redirectAttributes);
+        if (ex.getData() != null) {
+            redirectAttributes.addFlashAttribute("findRequest", ex.getData());
+        }
+        return "redirect:/users";
     }
     private void addErrorFlash(ApplicationException ex,
                                Locale locale,
