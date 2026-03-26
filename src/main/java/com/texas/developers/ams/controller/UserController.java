@@ -7,6 +7,7 @@ import com.texas.developers.ams.enums.RoleEnum;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
 
@@ -36,6 +37,16 @@ public class UserController {
     @PostMapping("/add")
     public String save(@ModelAttribute UserDto dto) {
         userService.saveUser(dto);
+        return "redirect:/users";
+    }
+    @GetMapping("/toggle/{id}")
+    public String toggleUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.toggleUserStatus(id);
+            redirectAttributes.addFlashAttribute("success", "User status updated!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to update status!");
+        }
         return "redirect:/users";
     }
 }

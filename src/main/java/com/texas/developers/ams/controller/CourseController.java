@@ -1,6 +1,8 @@
 package com.texas.developers.ams.controller;
 
 import com.texas.developers.ams.configuration.service.CourseServices;
+import com.texas.developers.ams.converter.CourseConverter;
+import com.texas.developers.ams.dto.CourseDto;
 import com.texas.developers.ams.entity.Course;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class CourseController {
 
     private final CourseServices courseService;
+    private final CourseConverter courseConverter;
 
     @GetMapping
     public String listCourses(Model model) {
@@ -25,48 +28,59 @@ public class CourseController {
 
     @GetMapping("/add")
     public String showAddForm(Model model) {
-        // TODO create DTO and converter
-        model.addAttribute("course", new Course());
+        model.addAttribute("course", new CourseDto());
         return "course/course-form";
     }
 
-    @PostMapping("/add")
-    public String addCourse(@ModelAttribute("course") @Valid Course course,
-                            BindingResult result,
-                            RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
-            return "course/course-form";
+    @PostMapping("/edit")
+    public String showEditForm(@RequestParam("id") Integer id, Model model , RedirectAttributes redirectAttributes) {
+        Course course = courseService.getCourseById(id);
+        if (course == null) {
+            redirectAttributes.addFlashAttribute("error", "Course not found!");
+            return "redirect:/course";
         }
-        courseService.saveCourse(course);
-        redirectAttributes.addFlashAttribute("success", "Course added successfully!");
-        return "redirect:/course";
-    }
-
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Integer id, Model model) {
-        model.addAttribute("course", courseService.getCourseById(id));
+        CourseDto dto = courseConverter.toDTO(course);
+        model.addAttribute("course", dto);
         return "course/course-form";
     }
 
-    @PostMapping("/edit/{id}")
-    public String updateCourse(@PathVariable Integer id,
-                               @ModelAttribute("course") @Valid Course course,
-                               BindingResult result,
-                               RedirectAttributes redirectAttributes) {
+    @PostMapping("/save")
+    public String saveCourse(@ModelAttribute("course") @Valid CourseDto courseDto,
+                             BindingResult result,
+                             RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "course/course-form";
         }
-        course.setId(id);
+
+        Course course;
+        if (courseDto.getId() != null) {
+            course = courseService.getCourseById(courseDto.getId());
+            if (course == null) {
+                redirectAttributes.addFlashAttribute("error", "Course not found!");
+                return "redirect:/course";
+            }
+            course.setCourseName(courseDto.getCourseName());
+            course.setCourseDescription(courseDto.getCourseDescription());
+        } else {
+            course = courseConverter.toEntity(courseDto);
+        }
+
         courseService.saveCourse(course);
-        redirectAttributes.addFlashAttribute("success", "Course updated successfully!");
+        redirectAttributes.addFlashAttribute("success",
+                courseDto.getId() != null ? "Course updated successfully!" : "Course added successfully!");
         return "redirect:/course";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteCourse(@PathVariable Integer id,
+    @PostMapping("/delete")
+    public String deleteCourse(@ModelAttribute("course") CourseDto courseDto,
                                RedirectAttributes redirectAttributes) {
-        courseService.deleteCourse(id);
-        redirectAttributes.addFlashAttribute("success", "Course deleted successfully!");
+        Course existingCourse = courseService.getCourseById(courseDto.getId());
+        if (existingCourse != null) {
+            courseService.deleteCourse(existingCourse.getId());
+            redirectAttributes.addFlashAttribute("success", "Course deleted successfully!");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Course not found!");
+        }
         return "redirect:/course";
     }
 }

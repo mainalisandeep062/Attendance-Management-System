@@ -19,6 +19,9 @@
             <a href="/users/add" class="btn btn-success">+ Add User</a>
         </div>
 
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
         <!-- Tabs -->
         <ul class="nav nav-tabs mb-3">
             <li class="nav-item">
