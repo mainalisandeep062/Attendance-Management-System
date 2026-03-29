@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "courses")
-public class Course {
+public class Course extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -29,10 +29,5 @@ public class Course {
     @NotBlank(message = "COURSE_DESCRIPTION_REQUIRED")
     @Column(name = "course_description", length = 1000, nullable = false)
     private String courseDescription;
-
-    @Column(name = "created_at", updatable = false)
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
 
 }
