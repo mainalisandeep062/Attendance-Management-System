@@ -25,7 +25,7 @@ public class TeacherController {
     public String teachers(Model model) {
         List<Teacher> teachers = teacherService.getAllTeachers();
         model.addAttribute("teachers", teachers);
-        return "/course/teacher-list";
+        return "/course/teacher";
     }
 
     @GetMapping("/add")
@@ -35,7 +35,7 @@ public class TeacherController {
 
         model.addAttribute("teacher", teacher);
         model.addAttribute("courses", courseService.getAllCourses());
-        return "/course/teacher-form";
+        return "/course/teacher";
     }
 
     @PostMapping("/add")
@@ -49,7 +49,7 @@ public class TeacherController {
         Teacher teacher = teacherService.getTeacherById(id);
         model.addAttribute("teacher", teacher);
         model.addAttribute("courses", courseService.getAllCourses());
-        return "/course/teacher-form";
+        return "/course/teacher";
     }
 
     @PostMapping("/update")

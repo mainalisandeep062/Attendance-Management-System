@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Teacher Management</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="d-flex">
+
+    <!-- Sidebar -->
+    <div th:replace="fragments/sidebar :: sidebar"></div>
+
+    <!-- Main Content -->
+    <div class="flex-grow-1 p-4 mt-3">
+
+        <div class="row">
+
+            <!-- ================= LEFT: FORM ================= -->
+            <div class="col-md-4">
+                <div class="card p-3 shadow-sm">
+                    <h5 th:text="${teacher.id != null} ? 'Edit Teacher' : 'Add Teacher'"></h5>
+
+                    <form th:object="${teacher}" method="post"
+                          th:action="${teacher.id == null ? '/teacher/add' : '/teacher/update'}">
+
+                            <input type="hidden" th:field="*{id}"/>
+
+                        <div class="mb-2">
+                            <label>Full Name</label>
+                            <input type="text" th:field="*{fullName}" class="form-control" required/>
+                        </div>
+
+                        <div class="mb-2">
+                            <label>Email</label>
+                            <input type="email" th:field="*{email}" class="form-control" required/>
+                        </div>
+
+                        <div class="mb-2">
+                            <label>Mobile Number</label>
+                            <input type="text" th:field="*{mobileNumber}" class="form-control" required/>
+                        </div>
+
+                        <div class="mb-2">
+                            <label>Courses</label>
+                            <select name="courseIds" multiple class="form-select">
+                                <option th:each="course : ${courses}"
+                                        th:value="${course.id}"
+                                        th:text="${course.courseName}"
+                                        th:selected="${teacher.courses != null and #lists.contains(teacher.courses, course)}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mt-2">Save</button>
+
+                        <a th:href="@{/teacher}" class="btn btn-secondary w-100 mt-2">Reset</a>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ================= RIGHT: TABLE ================= -->
+            <div class="col-md-8">
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Teachers</h3>
+                </div>
+
+                <table class="table table-bordered table-striped">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Courses</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="teacher : ${teachers}">
+                        <td th:text="${teacher.id}"></td>
+                        <td th:text="${teacher.fullName}"></td>
+                        <td th:text="${teacher.email}"></td>
+                        <td th:text="${teacher.mobileNumber}"></td>
+
+                        <td>
+                            <span th:text="${teacher.courses.size() > 0} ? ${teacher.courses[0].courseName} : 'None'"></span>
+                        </td>
+
+                        <td>
+                            <!-- Edit -->
+                            <a th:href="@{/teacher/edit/{id}(id=${teacher.id})}"
+                               class="btn btn-warning btn-sm">Edit</a>
+
+                            <!-- Delete -->
+                            <a th:href="@{/teacher/delete/{id}(id=${teacher.id})}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Are you sure?')">Delete</a>
+
+                            <!-- View -->
+                            <button class="btn btn-info btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#viewModal"
+                                    th:attr="
+                                        data-id=${teacher.id},
+                                        data-name=${teacher.fullName},
+                                        data-email=${teacher.email},
+                                        data-mobile=${teacher.mobileNumber},
+                                        data-courses=${#strings.listJoin(teacher.courses.![courseName], ', ')}
+                                    ">
+                                View
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- ================= MODAL ================= -->
+<div class="modal fade" id="viewModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content shadow">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Teacher Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p><strong>ID:</strong> <span id="viewId"></span></p>
+                <p><strong>Name:</strong> <span id="viewName"></span></p>
+                <p><strong>Email:</strong> <span id="viewEmail"></span></p>
+                <p><strong>Mobile:</strong> <span id="viewMobile"></span></p>
+                <p><strong>Courses:</strong> <span id="viewCourses"></span></p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ================= JS ================= -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const viewModal = document.getElementById('viewModal');
+
+    viewModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+
+        document.getElementById('viewId').textContent = button.getAttribute('data-id');
+        document.getElementById('viewName').textContent = button.getAttribute('data-name');
+        document.getElementById('viewEmail').textContent = button.getAttribute('data-email');
+        document.getElementById('viewMobile').textContent = button.getAttribute('data-mobile');
+        document.getElementById('viewCourses').textContent = button.getAttribute('data-courses');
+    });
+</script>
+
+</body>
+</html>

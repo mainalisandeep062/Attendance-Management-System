@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 @Builder
 public class TeacherUpdateDto {
+    private Integer id;
     private String fullName;
     private String email;
     private String mobileNumber;
