@@ -35,9 +35,27 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public String save(@ModelAttribute UserDto dto) {
-        userService.saveUser(dto);
-        return "redirect:/users";
+    public String save(@ModelAttribute UserDto dto,
+                       @RequestParam(name = "fromTeacher", required = false, defaultValue = "false") boolean fromTeacher,
+                       RedirectAttributes redirectAttributes) {
+        try {
+            if (fromTeacher) {
+                dto.setRole(RoleEnum.TEACHER);
+                if (dto.getUsername() == null || dto.getUsername().isBlank()) {
+                    dto.setUsername(dto.getEmail());
+                }
+                if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+                    dto.setPassword(dto.getMobileNumber());
+                }
+            }
+
+            userService.saveUser(dto);
+            redirectAttributes.addFlashAttribute("success", "User created successfully.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to create user.");
+        }
+
+        return"redirect:/users";
     }
     @GetMapping("/toggle/{id}")
     public String toggleUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {

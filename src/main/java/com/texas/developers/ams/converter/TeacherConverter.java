@@ -34,16 +34,18 @@ public class TeacherConverter {
                 .build();
 
         teacher.setCourses(new ArrayList<>());
-        List<Course> courses =
-                courseRepository.findAllById(dto.getCourseIds());
+
+        if (dto.getCourseIds() == null || dto.getCourseIds().isEmpty()) {
+            return teacher;
+        }
+
+        List<Course> courses = courseRepository.findAllById(dto.getCourseIds());
         teacher.setCourses(courses);
 
         return teacher;
     }
 
     public List<TeacherResponseDto> toDtoList(List<Teacher> teachers) {
-        List<TeacherResponseDto> teacherDtoList =
-                teachers.stream().map(this::toDTO).toList();
-        return teacherDtoList;
+        return teachers.stream().map(this::toDTO).toList();
     }
 }
