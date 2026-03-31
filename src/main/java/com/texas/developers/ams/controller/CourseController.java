@@ -23,7 +23,8 @@ public class CourseController {
     @GetMapping
     public String listCourses(Model model) {
         model.addAttribute("courses", courseService.getAllCourses());
-        return "course/course-list";
+        model.addAttribute("course" , new CourseDto());
+        return "course/course-form";
     }
 
     @GetMapping("/add")
@@ -41,6 +42,8 @@ public class CourseController {
         }
         CourseDto dto = courseConverter.toDTO(course);
         model.addAttribute("course", dto);
+        model.addAttribute("courses", courseService.getAllCourses());
+
         return "course/course-form";
     }
 
