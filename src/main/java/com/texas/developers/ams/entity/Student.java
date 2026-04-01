@@ -3,10 +3,12 @@ package com.texas.developers.ams.entity;
 import com.texas.developers.ams.enums.Faculty;
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDate;
+
 
 @Entity
-@Setter
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,4 +31,7 @@ public class Student extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "faculty", nullable = false)
     private Faculty faculty;
+
+    @Column(name = "college_join_date")
+    private LocalDate collegeJoinDate;
 }
