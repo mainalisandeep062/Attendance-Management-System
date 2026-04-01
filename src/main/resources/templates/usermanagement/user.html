@@ -8,9 +8,8 @@
 <body>
 
 <div class="d-flex">
-
-    <div th:replace="fragments/sidebar :: sidebar"></div>
-    <div th:replace="fragments/sidebar :: allcss"></div>
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div th:replace="~{fragments/sidebar :: allcss}"></div>
 
 
     <div class="flex-grow-1 p-4">
