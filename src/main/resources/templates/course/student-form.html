@@ -44,12 +44,17 @@
 
                         <div class="mb-2">
                             <label>Faculty</label>
-                            <input type="text" th:field="*{faculty}" class="form-control" required/>
+                            <select th:field="*{faculty}" class="form-control" required>
+                                <option value="" disabled selected>Select Faculty</option>
+                                <option th:each="fac : ${T(com.texas.developers.ams.enums.Faculty).values()}"
+                                        th:value="${fac.name()}"
+                                        th:text="${fac.name()}"></option>
+                            </select>
                         </div>
 
                         <div class="mb-2">
                             <label>College Join Date</label>
-                            <input type="Date" th:field="*{collegeJoinDate}" class="form-control" required/>
+                            <input type="date" th:field="*{collegeJoinDate}" class="form-control" required/>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 mt-2">Save</button>

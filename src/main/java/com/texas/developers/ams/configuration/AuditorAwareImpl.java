@@ -17,7 +17,17 @@ public class AuditorAwareImpl implements AuditorAware<String> {
 
     @Override
     public Optional<String> getCurrentAuditor() {
-        Object user = session.getAttribute("username"); // or user object
-        return Optional.ofNullable(user != null ? user.toString() : "SYSTEM");
+        try {
+            if (session != null) {
+                Object user = session.getAttribute("username"); // or user object
+                return Optional.ofNullable(user != null ? user.toString() : "SYSTEM");
+            } else {
+                return Optional.empty();
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            System.out.println("Do nothing");
+            return Optional.empty();
+        }
     }
 }

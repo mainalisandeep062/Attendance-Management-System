@@ -4,7 +4,7 @@ package com.texas.developers.ams.dto.studentDto;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 
 @Data
@@ -15,5 +15,5 @@ public class StudentResponseDto {
     private long mobileNumber;
     private String email;
     private String faculty;
-    private Date collegeJoinDate;
+    private LocalDate collegeJoinDate;
 }

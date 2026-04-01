@@ -3,7 +3,7 @@ package com.texas.developers.ams.dto.studentDto;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -13,5 +13,5 @@ public class StudentUpdateDto {
     private String email;
     private String mobileNumber;
     private String faculty;
-    private Date collegeJoinDate;
+    private LocalDate collegeJoinDate;
 }

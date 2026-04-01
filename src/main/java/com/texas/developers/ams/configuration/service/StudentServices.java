@@ -20,6 +20,7 @@ public class StudentServices {
 
     public void addStudent(StudentRequestDto studentRequestDto) {
         Student student = studentConverter.toEntity(studentRequestDto);
+        studentRepository.save(student);
         try{
             emailService.sendEmail(
                     student.getEmail(),
@@ -31,7 +32,6 @@ public class StudentServices {
         }catch (Exception e){
             throw new RuntimeException("Failed to send email to " + student.getEmail(), e);
         }
-        studentRepository.save(student);
     }
 
     public Student getStudentById(Integer id) {
