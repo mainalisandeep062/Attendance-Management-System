@@ -21,17 +21,6 @@ public class StudentServices {
     public void addStudent(StudentRequestDto studentRequestDto) {
         Student student = studentConverter.toEntity(studentRequestDto);
         studentRepository.save(student);
-        try{
-            emailService.sendEmail(
-                    student.getEmail(),
-                    "Welcome to the School",
-                    "email/registrationsuccess",
-                    Map.of("name", student.getFullName(),
-                            "username", student.getEmail(),
-                            "password", "defaultPassword123"));
-        }catch (Exception e){
-            throw new RuntimeException("Failed to send email to " + student.getEmail(), e);
-        }
     }
 
     public Student getStudentById(Integer id) {
