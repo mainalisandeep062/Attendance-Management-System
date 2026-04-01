@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Session Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media (min-width: 992px) {
+            #sessionModal .modal-dialog {
+                max-width: 980px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div th:replace="~{fragments/sidebar :: allcss}"></div>
+
+    <div class="flex-grow-1 p-4 mt-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">Sessions</h3>
+            <button type="button" class="btn btn-primary" id="addSessionButton" data-bs-toggle="modal" data-bs-target="#sessionModal">
+                Create Session
+            </button>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+            <tr>
+                <th>SN</th>
+                <th>Session Name</th>
+                <th>Teacher</th>
+                <th>Course</th>
+                <th>Start Date</th>
+                <th>Start Time</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(sessions)}">
+                <td colspan="7" class="text-center">No sessions found.</td>
+            </tr>
+            <tr th:each="courseSession, stat : ${sessions}">
+                <td th:text="${stat.count}"></td>
+                <td th:text="${courseSession.name ?: '-'}"></td>
+                <td th:text="${courseSession.teacherName ?: '-'}"></td>
+                <td th:text="${courseSession.courseName ?: '-'}"></td>
+                <td th:text="${courseSession.startDate ?: '-'}"></td>
+                <td th:text="${courseSession.sessionTime ?: '-'}"></td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${courseSession.status == 'ACTIVE'} ? ' bg-success' : (${courseSession.status == 'CLOSED'} ? ' bg-warning text-dark' : ' bg-secondary')"
+                          th:text="${courseSession.status ?: '-'}"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="sessionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow">
+            <form th:object="${sessionForm}" method="post" th:action="@{/sessions/save}">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Session</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="hidden" th:field="*{id}" id="sessionId"/>
+
+                    <div class="mb-3">
+                        <label for="sessionName" class="form-label">Session Name</label>
+                        <input type="text" id="sessionName" th:field="*{name}" class="form-control" maxlength="50" required/>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="sessionTeacher" class="form-label">Teacher</label>
+                            <select id="sessionTeacher" th:field="*{teacherId}" class="form-select" required>
+                                <option value="">-- Select Teacher --</option>
+                                <option th:each="teacher : ${teachers}" th:value="${teacher.id}" th:text="${teacher.fullName}"></option>
+                            </select>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('teacherId')}" th:errors="*{teacherId}"></div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="sessionCourse" class="form-label">Course</label>
+                            <select id="sessionCourse" th:field="*{courseId}" class="form-select" required>
+                                <option value="">-- Select Course --</option>
+                                <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.courseName}"></option>
+                            </select>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('courseId')}" th:errors="*{courseId}"></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label">Start Date</label>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <select th:field="*{startYear}" class="form-select" required>
+                                    <option value="">Year</option>
+                                    <option th:each="year : ${years}" th:value="${year}" th:text="${year}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select th:field="*{startMonth}" class="form-select" required>
+                                    <option value="">Month</option>
+                                    <option th:each="month : ${months}" th:value="${month}" th:text="${month}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select th:field="*{startDay}" class="form-select" required>
+                                    <option value="">Day</option>
+                                    <option th:each="day : ${days}" th:value="${day}" th:text="${day}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('startYear')}" th:errors="*{startYear}"></div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('startMonth')}" th:errors="*{startMonth}"></div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('startDay')}" th:errors="*{startDay}"></div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="form-label">Session Time Range</label>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-2">
+                                <select th:field="*{startHour}" class="form-select" required>
+                                    <option value="">HH</option>
+                                    <option th:each="hour : ${hours}" th:value="${hour}" th:text="${#numbers.formatInteger(hour,2)}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select th:field="*{startMinute}" class="form-select" required>
+                                    <option value="">MM</option>
+                                    <option th:each="minute : ${minutes}" th:value="${minute}" th:text="${#numbers.formatInteger(minute,2)}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select th:field="*{startMeridiem}" class="form-select" required>
+                                    <option value="">AM/PM</option>
+                                    <option th:each="meridiem : ${meridiems}" th:value="${meridiem}" th:text="${meridiem}"></option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-1 text-center fw-bold">to</div>
+
+                            <div class="col-md-2">
+                                <select th:field="*{endHour}" class="form-select" required>
+                                    <option value="">HH</option>
+                                    <option th:each="hour : ${hours}" th:value="${hour}" th:text="${#numbers.formatInteger(hour,2)}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <select th:field="*{endMinute}" class="form-select" required>
+                                    <option value="">MM</option>
+                                    <option th:each="minute : ${minutes}" th:value="${minute}" th:text="${#numbers.formatInteger(minute,2)}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <select th:field="*{endMeridiem}" class="form-select" required>
+                                    <option value="">AM/PM</option>
+                                    <option th:each="meridiem : ${meridiems}" th:value="${meridiem}" th:text="${meridiem}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="text-danger small mt-1" th:if="${#fields.hasErrors('startHour')}" th:errors="*{startHour}"></div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('startMinute')}" th:errors="*{startMinute}"></div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('startMeridiem')}" th:errors="*{startMeridiem}"></div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('endHour')}" th:errors="*{endHour}"></div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('endMinute')}" th:errors="*{endMinute}"></div>
+                        <div class="text-danger small" th:if="${#fields.hasErrors('endMeridiem')}" th:errors="*{endMeridiem}"></div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    const sessionModalElement = document.getElementById('sessionModal');
+    const sessionModal = new bootstrap.Modal(sessionModalElement);
+
+    document.getElementById('addSessionButton').addEventListener('click', function () {
+        document.getElementById('sessionId').value = '';
+    });
+
+    const showSessionModal = /*[[${showSessionModal}]]*/ false;
+    if (showSessionModal) {
+        sessionModal.show();
+    }
+</script>
+</body>
+</html>
