@@ -1,4 +1,4 @@
-package com.texas.developers.ams.dto;
+package com.texas.developers.ams.dto.sessiondto;
 
 import lombok.Builder;
 import lombok.Data;

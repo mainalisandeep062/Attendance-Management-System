@@ -2,13 +2,43 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>Session Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         @media (min-width: 992px) {
             #sessionModal .modal-dialog {
-                max-width: 980px;
+                max-width: 910px;
             }
+        }
+
+        /* Keep all six time selects same fixed width so AM/PM never gets clipped. */
+        #sessionModal .time-range-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #sessionModal .time-slot {
+            flex: 0 0 130px;
+        }
+
+        #sessionModal .time-slot .form-select {
+            width: 100%;
+        }
+
+        #sessionModal .time-separator {
+            flex: 0 0 28px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        #sessionStudentsModal .muted-note {
+            font-size: 0.86rem;
+            color: #6c757d;
         }
     </style>
 </head>
@@ -44,8 +74,8 @@
                 <th>Teacher</th>
                 <th>Course</th>
                 <th>Start Date</th>
-                <th>Start Time</th>
                 <th>Status</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -58,11 +88,24 @@
                 <td th:text="${courseSession.teacherName ?: '-'}"></td>
                 <td th:text="${courseSession.courseName ?: '-'}"></td>
                 <td th:text="${courseSession.startDate ?: '-'}"></td>
-                <td th:text="${courseSession.sessionTime ?: '-'}"></td>
                 <td>
                     <span class="badge"
                           th:classappend="${courseSession.status == 'ACTIVE'} ? ' bg-success' : (${courseSession.status == 'CLOSED'} ? ' bg-warning text-dark' : ' bg-secondary')"
                           th:text="${courseSession.status ?: '-'}"></span>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-info" title="View" data-bs-toggle="modal" data-bs-target="#viewSessionModal" th:attr="data-session-id=${courseSession.id}">
+                        <i class="bi bi-eye"></i> View
+                    </button>
+                    <button type="button" class="btn btn-sm btn-warning" title="Edit" data-bs-toggle="modal" data-bs-target="#sessionModal" th:attr="data-session-id=${courseSession.id}">
+                        <i class="bi bi-pencil"></i> Edit
+                    </button>
+                    <button type="button" class="btn btn-sm btn-success js-open-students" title="Add Students" data-bs-toggle="modal" data-bs-target="#sessionStudentsModal" th:attr="data-session-id=${courseSession.id}">
+                        <i class="bi bi-person-plus"></i> Add Students
+                    </button>
+                    <button type="button" class="btn btn-sm btn-primary js-open-students" title="View Students" data-bs-toggle="modal" data-bs-target="#sessionStudentsModal" th:attr="data-session-id=${courseSession.id}">
+                        <i class="bi bi-people"></i> View Students
+                    </button>
                 </td>
             </tr>
             </tbody>
@@ -75,36 +118,47 @@
         <div class="modal-content shadow">
             <form th:object="${sessionForm}" method="post" th:action="@{/sessions/save}">
                 <div class="modal-header">
-                    <h5 class="modal-title">Create Session</h5>
+                    <h5 class="modal-title" id="sessionModalTitle">Create Session</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body">
                     <input type="hidden" th:field="*{id}" id="sessionId"/>
 
-                    <div class="mb-3">
-                        <label for="sessionName" class="form-label">Session Name</label>
-                        <input type="text" id="sessionName" th:field="*{name}" class="form-control" maxlength="50" required/>
-                        <div class="text-danger small" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    <div class="row g-3 align-items-end mb-3">
+                        <div class="col-md-8">
+                            <label for="sessionName" class="form-label">Session Name</label>
+                            <input type="text" id="sessionName" th:field="*{name}" class="form-control" maxlength="50" required/>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+                        <div class="col-md-4" id="sessionStatusGroup" th:classappend="${sessionForm.id == null} ? ' d-none'">
+                            <label for="sessionStatus" class="form-label">Status</label>
+                            <select id="sessionStatus" th:field="*{status}" class="form-select">
+                                <option value="">-- Select Status --</option>
+                                <option th:each="statusOpt : ${sessionStatuses}" th:value="${statusOpt}" th:text="${statusOpt}"></option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="sessionTeacher" class="form-label">Teacher</label>
-                            <select id="sessionTeacher" th:field="*{teacherId}" class="form-select" required>
-                                <option value="">-- Select Teacher --</option>
-                                <option th:each="teacher : ${teachers}" th:value="${teacher.id}" th:text="${teacher.fullName}"></option>
-                            </select>
-                            <div class="text-danger small" th:if="${#fields.hasErrors('teacherId')}" th:errors="*{teacherId}"></div>
-                        </div>
+                    <div class="mb-3">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="sessionTeacher" class="form-label">Teacher</label>
+                                <select id="sessionTeacher" th:field="*{teacherId}" class="form-select" required>
+                                    <option value="">-- Select Teacher --</option>
+                                    <option th:each="teacher : ${teachers}" th:value="${teacher.id}" th:text="${teacher.fullName}"></option>
+                                </select>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('teacherId')}" th:errors="*{teacherId}"></div>
+                            </div>
 
-                        <div class="col-md-6">
-                            <label for="sessionCourse" class="form-label">Course</label>
-                            <select id="sessionCourse" th:field="*{courseId}" class="form-select" required>
-                                <option value="">-- Select Course --</option>
-                                <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.courseName}"></option>
-                            </select>
-                            <div class="text-danger small" th:if="${#fields.hasErrors('courseId')}" th:errors="*{courseId}"></div>
+                            <div class="col-md-6">
+                                <label for="sessionCourse" class="form-label">Course</label>
+                                <select id="sessionCourse" th:field="*{courseId}" class="form-select" required>
+                                    <option value="">-- Select Course --</option>
+                                    <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.courseName}"></option>
+                                </select>
+                                <div class="text-danger small" th:if="${#fields.hasErrors('courseId')}" th:errors="*{courseId}"></div>
+                            </div>
                         </div>
                     </div>
 
@@ -118,15 +172,23 @@
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <select th:field="*{startMonth}" class="form-select" required>
+                                <select th:field="*{startMonth}" class="form-select" id="monthSelect" required>
                                     <option value="">Month</option>
-                                    <option th:each="month : ${months}" th:value="${month}" th:text="${month}"></option>
+                                    <option th:each="month, stat : ${monthNames}"
+                                            th:value="${stat.count}"
+                                            th:text="${month}"
+                                            th:attr="data-month-num=${stat.count}"
+                                            th:disabled="${#fields.globalErrors.isEmpty() and stat.count < currentMonth}"></option>
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <select th:field="*{startDay}" class="form-select" required>
+                                <select th:field="*{startDay}" class="form-select" id="daySelect" required>
                                     <option value="">Day</option>
-                                    <option th:each="day : ${days}" th:value="${day}" th:text="${day}"></option>
+                                    <option th:each="day : ${days}"
+                                            th:value="${day}"
+                                            th:text="${day}"
+                                            th:attr="data-day-num=${day}"
+                                            th:disabled="${#fields.globalErrors.isEmpty() and day < currentDay}"></option>
                                 </select>
                             </div>
                         </div>
@@ -137,41 +199,41 @@
 
                     <div class="mt-3">
                         <label class="form-label">Session Time Range</label>
-                        <div class="row g-2 align-items-center">
-                            <div class="col-md-2">
+                        <div class="time-range-row">
+                            <div class="time-slot">
                                 <select th:field="*{startHour}" class="form-select" required>
                                     <option value="">HH</option>
                                     <option th:each="hour : ${hours}" th:value="${hour}" th:text="${#numbers.formatInteger(hour,2)}"></option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                            <div class="time-slot">
                                 <select th:field="*{startMinute}" class="form-select" required>
                                     <option value="">MM</option>
                                     <option th:each="minute : ${minutes}" th:value="${minute}" th:text="${#numbers.formatInteger(minute,2)}"></option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                            <div class="time-slot">
                                 <select th:field="*{startMeridiem}" class="form-select" required>
                                     <option value="">AM/PM</option>
                                     <option th:each="meridiem : ${meridiems}" th:value="${meridiem}" th:text="${meridiem}"></option>
                                 </select>
                             </div>
 
-                            <div class="col-md-1 text-center fw-bold">to</div>
+                            <div class="time-separator">to</div>
 
-                            <div class="col-md-2">
+                            <div class="time-slot">
                                 <select th:field="*{endHour}" class="form-select" required>
                                     <option value="">HH</option>
                                     <option th:each="hour : ${hours}" th:value="${hour}" th:text="${#numbers.formatInteger(hour,2)}"></option>
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                            <div class="time-slot">
                                 <select th:field="*{endMinute}" class="form-select" required>
                                     <option value="">MM</option>
                                     <option th:each="minute : ${minutes}" th:value="${minute}" th:text="${#numbers.formatInteger(minute,2)}"></option>
                                 </select>
                             </div>
-                            <div class="col-md-1">
+                            <div class="time-slot">
                                 <select th:field="*{endMeridiem}" class="form-select" required>
                                     <option value="">AM/PM</option>
                                     <option th:each="meridiem : ${meridiems}" th:value="${meridiem}" th:text="${meridiem}"></option>
@@ -196,19 +258,382 @@
     </div>
 </div>
 
+<!-- View Session Modal -->
+<div class="modal fade" id="viewSessionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow">
+            <div class="modal-header">
+                <h5 class="modal-title">View Session Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="viewSessionContent">
+                    <p class="text-muted">Loading session details...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Session Students Modal -->
+<div class="modal fade" id="sessionStudentsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content shadow">
+            <div class="modal-header">
+                <h5 class="modal-title">Manage Session Students</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-8">
+                        <input type="text" id="studentSearchInput" class="form-control" placeholder="Search student by name..."/>
+                    </div>
+                    <div class="col-md-4 d-grid">
+                        <button type="button" class="btn btn-outline-secondary" id="searchStudentsBtn">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+                </div>
+
+                <div id="studentModalMessage" class="alert d-none" role="alert"></div>
+
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <h6 class="mb-2">Students in this Session</h6>
+                        <div id="sessionStudentListWrapper" class="border rounded p-2" style="min-height: 280px;">
+                            <p class="text-muted mb-0">Loading...</p>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <h6 class="mb-2">Add More Students</h6>
+                        <div id="studentCandidateListWrapper" class="border rounded p-2" style="min-height: 280px;">
+                            <p class="text-muted mb-0">Loading...</p>
+                        </div>
+                        <p class="muted-note mt-2 mb-0">Students already in another ACTIVE session are disabled.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveStudentsBtn">Add Selected Students</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
-    const sessionModalElement = document.getElementById('sessionModal');
-    const sessionModal = new bootstrap.Modal(sessionModalElement);
+    const sessionModal = new bootstrap.Modal(document.getElementById('sessionModal'));
+    const currentYear = /*[[${currentYear}]]*/ 2026;
+    const currentMonth = /*[[${currentMonth}]]*/ 1;
+    const currentDay = /*[[${currentDay}]]*/ 1;
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || '';
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content') || 'X-CSRF-TOKEN';
+
+    const studentsModalEl = document.getElementById('sessionStudentsModal');
+    const studentsModal = new bootstrap.Modal(studentsModalEl);
+    const messageEl = document.getElementById('studentModalMessage');
+    const inSessionWrapper = document.getElementById('sessionStudentListWrapper');
+    const candidatesWrapper = document.getElementById('studentCandidateListWrapper');
+    const searchInput = document.getElementById('studentSearchInput');
+
+    let activeSessionId = null;
+
+    function showMessage(type, text) {
+        messageEl.className = `alert alert-${type}`;
+        messageEl.textContent = text;
+        messageEl.classList.remove('d-none');
+    }
+
+    function clearMessage() {
+        messageEl.className = 'alert d-none';
+        messageEl.textContent = '';
+    }
+
+    function updateDateOptions() {
+        const yearSelect = document.querySelector('select[name="startYear"]');
+        const monthSelect = document.querySelector('select[name="startMonth"]');
+        const daySelect = document.querySelector('select[name="startDay"]');
+
+        const selectedYear = parseInt(yearSelect.value || '0', 10);
+        const selectedMonth = parseInt(monthSelect.value || '0', 10);
+
+        monthSelect.querySelectorAll('option').forEach(option => {
+            if (!option.value) {
+                option.disabled = false;
+                return;
+            }
+            const monthNum = parseInt(option.getAttribute('data-month-num') || option.value, 10);
+            option.disabled = selectedYear === currentYear && monthNum < currentMonth;
+        });
+
+        daySelect.querySelectorAll('option').forEach(option => {
+            if (!option.value) {
+                option.disabled = false;
+                return;
+            }
+            const dayNum = parseInt(option.getAttribute('data-day-num') || option.value, 10);
+            option.disabled = selectedYear === currentYear && selectedMonth === currentMonth && dayNum < currentDay;
+        });
+    }
+
+    function parseSessionTimeToFields(timeRange) {
+        if (!timeRange || !timeRange.includes('-')) return;
+        const [startRaw, endRaw] = timeRange.split('-').map(s => s.trim());
+        const parsePart = (part) => {
+            const [time, meridiem] = part.split(' ');
+            const [hour, minute] = time.split(':');
+            return { hour, minute, meridiem };
+        };
+
+        const start = parsePart(startRaw);
+        const end = parsePart(endRaw);
+
+        document.querySelector('select[name="startHour"]').value = parseInt(start.hour, 10);
+        document.querySelector('select[name="startMinute"]').value = parseInt(start.minute, 10);
+        document.querySelector('select[name="startMeridiem"]').value = start.meridiem;
+        document.querySelector('select[name="endHour"]').value = parseInt(end.hour, 10);
+        document.querySelector('select[name="endMinute"]').value = parseInt(end.minute, 10);
+        document.querySelector('select[name="endMeridiem"]').value = end.meridiem;
+    }
+
+    async function loadSessionStudents() {
+        if (!activeSessionId) return;
+        clearMessage();
+        inSessionWrapper.innerHTML = '<p class="text-muted mb-0">Loading...</p>';
+
+        const keyword = encodeURIComponent(searchInput.value.trim());
+        const response = await fetch(`/sessions/${activeSessionId}/students?keyword=${keyword}`);
+        if (!response.ok) {
+            throw new Error('Failed to load students in session.');
+        }
+        const rows = await response.json();
+
+        if (!rows.length) {
+            inSessionWrapper.innerHTML = '<p class="text-muted mb-0">No students in this session.</p>';
+            return;
+        }
+
+        let html = '<table class="table table-sm table-bordered mb-0"><thead><tr><th>SN</th><th>Name</th><th>Email</th><th>Action</th></tr></thead><tbody>';
+        rows.forEach((row, index) => {
+            html += `<tr>
+                        <td>${index + 1}</td>
+                        <td>${row.fullName || '-'}</td>
+                        <td>${row.email || '-'}</td>
+                        <td><button type="button" class="btn btn-sm btn-outline-danger js-remove-student" data-student-id="${row.studentId}">Remove</button></td>
+                     </tr>`;
+        });
+        html += '</tbody></table>';
+        inSessionWrapper.innerHTML = html;
+    }
+
+    async function loadStudentCandidates() {
+        if (!activeSessionId) return;
+        candidatesWrapper.innerHTML = '<p class="text-muted mb-0">Loading...</p>';
+
+        const keyword = encodeURIComponent(searchInput.value.trim());
+        const response = await fetch(`/sessions/${activeSessionId}/student-candidates?keyword=${keyword}`);
+        if (!response.ok) {
+            throw new Error('Failed to load student candidates.');
+        }
+        const rows = await response.json();
+
+        if (!rows.length) {
+            candidatesWrapper.innerHTML = '<p class="text-muted mb-0">No students found.</p>';
+            return;
+        }
+
+        let html = '<div class="list-group list-group-flush">';
+        rows.forEach(row => {
+            const disabled = !row.selectable && !row.alreadyInSession;
+            const reason = disabled && row.activeSessionName ? ` (active in: ${row.activeSessionName})` : '';
+            html += `<label class="list-group-item d-flex justify-content-between align-items-center ${disabled ? 'text-muted' : ''}">
+                        <span>
+                            <input class="form-check-input me-2 js-candidate" type="checkbox" value="${row.studentId}" ${disabled || row.alreadyInSession ? 'disabled' : ''}>
+                            ${row.fullName || '-'}
+                            <small class="text-muted">${row.email || '-'}</small>
+                        </span>
+                        <span>${row.alreadyInSession ? '<span class="badge bg-success">In Session</span>' : (disabled ? `<small>${reason.trim()}</small>` : '')}</span>
+                     </label>`;
+        });
+        html += '</div>';
+        candidatesWrapper.innerHTML = html;
+    }
+
+    async function refreshStudentPanels() {
+        await Promise.all([loadSessionStudents(), loadStudentCandidates()]);
+    }
+
+    document.getElementById('searchStudentsBtn').addEventListener('click', function () {
+        refreshStudentPanels().catch(err => showMessage('danger', err.message));
+    });
+
+    searchInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            refreshStudentPanels().catch(err => showMessage('danger', err.message));
+        }
+    });
+
+    document.getElementById('saveStudentsBtn').addEventListener('click', async function () {
+        if (!activeSessionId) return;
+        const selectedIds = Array.from(document.querySelectorAll('.js-candidate:checked')).map(cb => Number(cb.value));
+
+        if (!selectedIds.length) {
+            showMessage('warning', 'Please select at least one student.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/sessions/${activeSessionId}/students`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify({ studentIds: selectedIds })
+            });
+            const result = await response.json();
+            if (!response.ok || result.success === false) {
+                throw new Error(result.message || 'Failed to add students.');
+            }
+
+            showMessage('success', result.message || 'Students added successfully.');
+            await refreshStudentPanels();
+        } catch (err) {
+            showMessage('danger', err.message);
+        }
+    });
+
+    studentsModalEl.addEventListener('click', async function (e) {
+        const removeBtn = e.target.closest('.js-remove-student');
+        if (!removeBtn || !activeSessionId) return;
+
+        const studentId = removeBtn.getAttribute('data-student-id');
+        try {
+            const response = await fetch(`/sessions/${activeSessionId}/students/${studentId}`, {
+                method: 'DELETE',
+                headers: {
+                    [csrfHeader]: csrfToken
+                }
+            });
+            const result = await response.json();
+            if (!response.ok || result.success === false) {
+                throw new Error(result.message || 'Failed to remove student.');
+            }
+
+            showMessage('success', result.message || 'Student removed from session.');
+            await refreshStudentPanels();
+        } catch (err) {
+            showMessage('danger', err.message);
+        }
+    });
+
+    document.querySelectorAll('.js-open-students').forEach(btn => {
+        btn.addEventListener('click', async function () {
+            activeSessionId = this.getAttribute('data-session-id');
+            searchInput.value = '';
+            clearMessage();
+            inSessionWrapper.innerHTML = '<p class="text-muted mb-0">Loading...</p>';
+            candidatesWrapper.innerHTML = '<p class="text-muted mb-0">Loading...</p>';
+            try {
+                await refreshStudentPanels();
+                studentsModal.show();
+            } catch (err) {
+                showMessage('danger', err.message);
+            }
+        });
+    });
 
     document.getElementById('addSessionButton').addEventListener('click', function () {
         document.getElementById('sessionId').value = '';
+        document.getElementById('sessionName').value = '';
+        document.getElementById('sessionTeacher').value = '';
+        document.getElementById('sessionCourse').value = '';
+        document.getElementById('sessionStatus').value = '';
+        document.getElementById('sessionStatusGroup').classList.add('d-none');
+        document.getElementById('sessionModalTitle').textContent = 'Create Session';
+        sessionModal.show();
+        setTimeout(updateDateOptions, 50);
     });
+
+    document.querySelectorAll('button[data-bs-target="#viewSessionModal"]').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const sessionId = this.getAttribute('data-session-id');
+            const viewContent = document.getElementById('viewSessionContent');
+            viewContent.innerHTML = '<p class="text-muted text-center">Loading session details...</p>';
+
+            fetch('/sessions/' + sessionId)
+                .then(res => res.ok ? res.json() : Promise.reject(new Error('Session not found')))
+                .then(data => {
+                    const badgeClass = data.status === 'ACTIVE' ? 'bg-success' : (data.status === 'CLOSED' ? 'bg-warning text-dark' : 'bg-secondary');
+                    viewContent.innerHTML = `
+                        <div class="container-fluid">
+                            <div class="row g-3">
+                                <div class="col-md-6"><strong>Session Name:</strong> ${data.name || '-'}</div>
+                                <div class="col-md-6"><strong>Status:</strong> <span class="badge ${badgeClass}">${data.status || '-'}</span></div>
+                                <div class="col-md-6"><strong>Start Date:</strong> ${data.startDate || '-'}</div>
+                                <div class="col-md-6"><strong>Session Time:</strong> ${data.sessionTime || '-'}</div>
+                                <div class="col-md-6"><strong>Teacher:</strong> ${data.teacherName || '-'}</div>
+                                <div class="col-md-6"><strong>Course:</strong> ${data.courseName || '-'}</div>
+                            </div>
+                        </div>`;
+                })
+                .catch(() => {
+                    viewContent.innerHTML = '<p class="text-danger text-center">Failed to load session details.</p>';
+                });
+        });
+    });
+
+    document.querySelectorAll('button[data-bs-target="#sessionModal"]').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const sessionId = this.getAttribute('data-session-id');
+            if (!sessionId) return;
+
+            fetch('/sessions/' + sessionId)
+                .then(res => res.ok ? res.json() : Promise.reject(new Error('Session not found')))
+                .then(data => {
+                    document.getElementById('sessionId').value = sessionId;
+                    document.getElementById('sessionName').value = data.name || '';
+                    document.getElementById('sessionTeacher').value = data.teacherId || '';
+                    document.getElementById('sessionCourse').value = data.courseId || '';
+                    document.getElementById('sessionStatus').value = data.status || '';
+                    document.getElementById('sessionStatusGroup').classList.remove('d-none');
+                    document.getElementById('sessionModalTitle').textContent = 'Edit Session';
+
+                    if (data.startDate) {
+                        const [y, m, d] = data.startDate.split('-');
+                        document.querySelector('select[name="startYear"]').value = y;
+                        document.querySelector('select[name="startMonth"]').value = Number(m);
+                        document.querySelector('select[name="startDay"]').value = Number(d);
+                    }
+
+                    parseSessionTimeToFields(data.sessionTime);
+                    updateDateOptions();
+                })
+                .catch(() => {
+                    showMessage('danger', 'Failed to load session for editing.');
+                });
+        });
+    });
+
+    document.querySelector('select[name="startYear"]').addEventListener('change', updateDateOptions);
+    document.querySelector('select[name="startMonth"]').addEventListener('change', updateDateOptions);
 
     const showSessionModal = /*[[${showSessionModal}]]*/ false;
     if (showSessionModal) {
+        const hasSessionId = !!document.getElementById('sessionId').value;
+        document.getElementById('sessionStatusGroup').classList.toggle('d-none', !hasSessionId);
+        document.getElementById('sessionModalTitle').textContent = hasSessionId ? 'Edit Session' : 'Create Session';
         sessionModal.show();
     }
+    updateDateOptions();
 </script>
 </body>
 </html>
+

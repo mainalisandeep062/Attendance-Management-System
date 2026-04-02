@@ -1,7 +1,7 @@
 package com.texas.developers.ams.converter;
 
-import com.texas.developers.ams.dto.SessionRequestDto;
-import com.texas.developers.ams.dto.SessionResponseDto;
+import com.texas.developers.ams.dto.sessiondto.SessionRequestDto;
+import com.texas.developers.ams.dto.sessiondto.SessionResponseDto;
 import com.texas.developers.ams.entity.Session;
 import org.springframework.stereotype.Component;
 

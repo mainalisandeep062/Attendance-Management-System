@@ -1,5 +1,6 @@
-package com.texas.developers.ams.dto;
+package com.texas.developers.ams.dto.sessiondto;
 
+import com.texas.developers.ams.enums.SessionStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -16,6 +17,9 @@ public class SessionRequestDto {
     @NotBlank(message = "Session name is required")
     @Size(max = 50, message = "Session name must be at most 50 characters")
     private String name;
+
+    // Optional in create mode; used in edit mode to update session status.
+    private SessionStatus status;
 
     @NotNull(message = "Teacher is required")
     private Integer teacherId;
