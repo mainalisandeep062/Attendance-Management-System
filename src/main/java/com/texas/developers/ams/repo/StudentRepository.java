@@ -11,4 +11,6 @@ public interface StudentRepository extends JpaRepository<Student, Integer > {
     List<Student> findAllByOrderByFullNameAsc();
 
     List<Student> findByFullNameContainingIgnoreCaseOrderByFullNameAsc(String keyword);
+
+    Boolean existsByEmail(String email);
 }
