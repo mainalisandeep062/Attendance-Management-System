@@ -1,6 +1,7 @@
 package com.texas.developers.ams.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -13,8 +14,5 @@ public class MainController {
         return "login";
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard() {
-        return "dashboard";
-    }
+
 }

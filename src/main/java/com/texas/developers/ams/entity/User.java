@@ -16,7 +16,7 @@ import lombok.Setter;
 })
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,4 +36,6 @@ public class User {
     @Column(name = "role", length = 50, nullable = false)
     @Enumerated(EnumType.STRING)
     private RoleEnum role;
+
+    private Boolean isActive = Boolean.TRUE;
 }

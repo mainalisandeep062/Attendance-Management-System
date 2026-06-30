@@ -13,16 +13,26 @@ spring:
             enable: true
           ssl:
             trust: ${SMTP_HOST:smtp.gmail.com}
+
+  # Datasource configuration for PostgreSQL
   datasource:
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:admin}
     url: ${DB_URI:jdbc:postgresql://localhost:5432/ams}
+
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
   application:
     name: ams
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB       # max single file size
+      max-request-size: 10MB    # max total request size
+
 server:
   port: ${PORT:8888}

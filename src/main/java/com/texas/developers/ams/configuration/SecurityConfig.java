@@ -12,9 +12,13 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final CustomLoginSuccessHandler successHandler;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+
+    public SecurityConfig(CustomUserDetailsService userDetailsService,
+                          CustomLoginSuccessHandler successHandler) {
         this.userDetailsService = userDetailsService;
+        this.successHandler = successHandler;
     }
 
     @Bean
@@ -24,8 +28,7 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) {
-
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login").permitAll()
@@ -33,7 +36,7 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/dashboard", true)
+                        .successHandler(successHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout
